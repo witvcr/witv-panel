@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>WiTV Panel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0d1117;padding:16px}
+.card{background:#161b22;border-radius:12px;padding:20px;width:100%;max-width:420px;border:1px solid #30363d;margin:0 auto}
+.logo{text-align:center;margin-bottom:18px}
+.logo h1{color:#e53935;font-size:26px;font-weight:900;letter-spacing:2px}
+.logo p{color:#8b949e;font-size:12px;margin-top:4px}
+.tabs{display:flex;background:#0d1117;border-radius:8px;padding:3px;margin-bottom:18px;gap:3px}
+.tab{flex:1;padding:10px;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:#555}
+.tab.active{background:#e53935;color:#fff}
+.fg{margin-bottom:14px}
+.fg label{display:block;color:#8b949e;font-size:11px;font-weight:600;margin-bottom:5px;text-transform:uppercase}
+.fg input,.fg select{width:100%;padding:12px 13px;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;font-size:14px;outline:none}
+.fg input:focus,.fg select:focus{border-color:#e53935}
+select option{background:#161b22}
+.row{display:flex;gap:10px}
+.row .fg{flex:1}
+.tel-row{display:flex;gap:8px}
+.tel-code{width:80px;flex-shrink:0}
+.tel-num{flex:1}
+.pricebox{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:14px;text-align:center}
+.plabel{color:#8b949e;font-size:10px;text-transform:uppercase;margin-bottom:4px}
+.amount{color:#3fb950;font-size:24px;font-weight:900}
+.promo-txt{color:#e53935;font-size:11px;margin-top:3px;display:none}
+.btn-main{width:100%;padding:13px;background:#e53935;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+.sep{border:none;border-top:1px solid #30363d;margin:16px 0}
+.sec-lbl{color:#8b949e;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:10px}
+.btn-upd{width:100%;padding:11px;background:#1f6feb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer}
+.result{display:none;margin-top:16px}
+.result.show{display:block}
+.rcard{background:#0d2d1a;border:1px solid #238636;border-radius:10px;padding:14px}
+.rcard.err{background:#2d0d0d;border-color:#da3633}
+.rtitle{color:#3fb950;font-weight:700;font-size:13px;margin-bottom:10px}
+.etitle{color:#f85149}
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.iitem label{color:#484f58;font-size:10px;text-transform:uppercase;margin-bottom:2px;display:block}
+.iitem span{color:#e6edf3;font-size:13px;font-weight:600}
+.promo-badge{background:#0d2d1a;border:1px solid #238636;border-radius:6px;padding:7px 10px;color:#3fb950;font-size:12px;margin-bottom:10px;text-align:center}
+.msgbox{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;color:#c9d1d9;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;margin-bottom:10px}
+.btn-copy{width:100%;padding:11px;background:#1f6feb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-copy.ok{background:#238636}
+.btn-back{width:100%;padding:9px;background:transparent;color:#8b949e;border:1px solid #30363d;border-radius:8px;font-size:13px;cursor:pointer;margin-top:7px}
+.loader{display:none;text-align:center;padding:20px;color:#8b949e}
+.spin{width:28px;height:28px;border:3px solid #30363d;border-top-color:#e53935;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <h1>Wi<span style="color:#e6edf3">TV</span></h1>
+    <p>Panel de gestion de clientes</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-act" onclick="setTab('ACTIVAR')">Activar cliente</button>
+    <button class="tab" id="tab-ren" onclick="setTab('RENOVAR')">Renovar</button>
+  </div>
+
+  <div id="form">
+    <input type="hidden" id="accion" value="ACTIVAR">
+
+    <div id="bloque-activar">
+      <div class="fg">
+        <label>Nombre del cliente</label>
+        <input type="text" id="nombre" placeholder="Juan Perez">
+      </div>
+      <div class="fg">
+        <label>Telefono del cliente</label>
+        <div class="tel-row">
+          <div class="tel-code"><input type="text" id="codpais" value="506"></div>
+          <div class="tel-num"><input type="tel" id="telefono" placeholder="12345678"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label>Usuario / Nombre de cuenta</label>
+      <input type="text" id="usuario" placeholder="Ej: user123">
+    </div>
+
+    <div class="row">
+      <div class="fg">
+        <label>Paquete</label>
+        <select id="paquete" onchange="calcPrecio()">
+          <option value="BASICO">Basico</option>
+          <option value="PREMIUM">Premium</option>
+          <option value="FLUJOTV">FlujotTV</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Dispositivos</label>
+        <select id="dispositivos" onchange="calcPrecio()">
+          <option value="3">3 disp.</option>
+          <option value="5">5 disp.</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="fg">
+        <label>Meses</label>
+        <select id="meses" onchange="calcPrecio()">
+          <option value="1">1 mes</option>
+          <option value="2">2 meses</option>
+          <option value="3">3 meses</option>
+          <option value="6">6 meses - PROMO</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Hora activacion</label>
+        <input type="time" id="hora" value="12:00">
+      </div>
+    </div>
+
+    <div class="pricebox">
+      <div class="plabel">Total a cobrar</div>
+      <div class="amount" id="precio">CRC 5,500</div>
+      <div class="promo-txt" id="promo"></div>
+    </div>
+
+    <button class="btn-main" onclick="enviar()">Procesar</button>
+
+    <div id="bloque-renovar" style="display:none">
+      <hr class="sep">
+      <div class="sec-lbl">Cambio de numero de telefono (opcional)</div>
+      <div class="fg">
+        <label>Nuevo numero del cliente</label>
+        <div class="tel-row">
+          <div class="tel-code"><input type="text" id="codpais2" value="506"></div>
+          <div class="tel-num"><input type="tel" id="telefono2" placeholder="12345678"></div>
+        </div>
+      </div>
+      <button class="btn-upd" onclick="actualizarTel()">Actualizar numero de telefono</button>
+    </div>
+  </div>
+
+  <div class="loader" id="loader"><div class="spin"></div>Procesando...</div>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+// *** IMPORTANTE: Reemplaza esta URL con la URL de tu Apps Script ***
+var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzR3e-dMfojW8W5yI5r1p0ymr-q1CdReMQkNhlt0KDVkcEDY0k2JRfTah1eJyX2Sx5dRw/exec";
+
+var P={BASICO:{3:5500,5:7500},PREMIUM:{3:7000,5:7000},FLUJOTV:{3:5000,5:5000}};
+var PROMO={6:2};
+
+function setTab(a){
+  document.getElementById("accion").value=a;
+  document.getElementById("tab-act").className="tab"+(a=="ACTIVAR"?" active":"");
+  document.getElementById("tab-ren").className="tab"+(a=="RENOVAR"?" active":"");
+  document.getElementById("bloque-activar").style.display=a=="ACTIVAR"?"block":"none";
+  document.getElementById("bloque-renovar").style.display=a=="RENOVAR"?"block":"none";
+  calcPrecio();
+}
+
+function calcPrecio(){
+  var pkg=document.getElementById("paquete").value;
+  var d=parseInt(document.getElementById("dispositivos").value);
+  var m=parseInt(document.getElementById("meses").value);
+  var base=(P[pkg]&&P[pkg][d])?P[pkg][d]:0;
+  var ex=PROMO[m]||0;
+  document.getElementById("precio").textContent="CRC "+(base*m).toLocaleString("es-CR");
+  var pe=document.getElementById("promo");
+  if(ex>0){pe.style.display="block";pe.textContent="PROMO: recibe "+(m+ex)+" meses ("+ex+" gratis)";}
+  else{pe.style.display="none";}
+  var o5=document.getElementById("dispositivos").querySelector("option[value='5']");
+  o5.disabled=pkg=="FLUJOTV"||pkg=="PREMIUM";
+}
+
+function enviar(){
+  var accion=document.getElementById("accion").value;
+  var usuario=document.getElementById("usuario").value.trim();
+  var paquete=document.getElementById("paquete").value;
+  var dispositivos=document.getElementById("dispositivos").value;
+  var meses=document.getElementById("meses").value;
+  var hora=document.getElementById("hora").value;
+  var nombre="";
+  var telefono="";
+
+  if(accion=="ACTIVAR"){
+    nombre=document.getElementById("nombre").value.trim();
+    var cod=document.getElementById("codpais").value.trim()||"506";
+    var num=document.getElementById("telefono").value.trim();
+    if(!nombre){alert("Ingresa el nombre del cliente.");return;}
+    if(!num){alert("Ingresa el numero de telefono.");return;}
+    telefono=cod+num;
+  }
+  if(!usuario){alert("Ingresa el usuario.");return;}
+
+  showLoader();
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({accion:accion,nombre:nombre,telefono:telefono,usuario:usuario,paquete:paquete,dispositivos:dispositivos,meses:meses,hora:hora})
+  })
+  .then(function(r){return r.json();})
+  .then(function(r){showResult(r);})
+  .catch(function(e){showResult({ok:false,error:"Error de conexion: "+e.message});});
+}
+
+function actualizarTel(){
+  var usuario=document.getElementById("usuario").value.trim();
+  var cod=document.getElementById("codpais2").value.trim()||"506";
+  var num=document.getElementById("telefono2").value.trim();
+  if(!usuario){alert("Ingresa el usuario primero.");return;}
+  if(!num){alert("Ingresa el nuevo numero de telefono.");return;}
+  showLoader();
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({accion:"ACTUALIZAR_TEL",nombre:"",telefono:cod+num,usuario:usuario,paquete:"BASICO",dispositivos:"3",meses:"1",hora:"12:00"})
+  })
+  .then(function(r){return r.json();})
+  .then(function(r){showResult(r);})
+  .catch(function(e){showResult({ok:false,error:"Error de conexion: "+e.message});});
+}
+
+function showLoader(){
+  document.getElementById("form").style.display="none";
+  document.getElementById("loader").style.display="block";
+  document.getElementById("result").className="result";
+}
+
+function showResult(r){
+  document.getElementById("loader").style.display="none";
+  var el=document.getElementById("result");
+
+  if(r.accion=="ACTUALIZAR_TEL"){
+    el.innerHTML=r.ok
+      ?'<div class="rcard"><div class="rtitle">Telefono actualizado</div><p style="color:#e6edf3;font-size:13px;">Usuario: <b>'+r.usuario+'</b><br>Nuevo telefono: <b>'+r.telefono+'</b></p><button class="btn-back" onclick="reset()">Volver</button></div>'
+      :'<div class="rcard err"><div class="rtitle etitle">Error</div><p style="color:#f85149;font-size:13px;">'+r.error+'</p><button class="btn-back" onclick="reset()">Volver</button></div>';
+    el.className="result show";return;
+  }
+
+  if(!r.ok){
+    el.innerHTML='<div class="rcard err"><div class="rtitle etitle">Error</div><p style="color:#f85149;font-size:13px;">'+r.error+'</p><button class="btn-back" onclick="reset()">Volver</button></div>';
+    el.className="result show";return;
+  }
+
+  var pb=r.mesesExtra>0?'<div class="promo-badge">PROMO: pago '+r.meses+' meses, recibe '+r.mesesTotal+' ('+r.mesesExtra+' gratis)</div>':"";
+  el.innerHTML='<div class="rcard">'+
+    '<div class="rtitle">'+(r.accion=="ACTIVAR"?"Cliente activado":"Renovacion registrada")+'</div>'+
+    '<div class="igrid">'+
+    '<div class="iitem"><label>Cliente</label><span>'+(r.nombre||"-")+'</span></div>'+
+    '<div class="iitem"><label>Telefono</label><span>'+r.telefono+'</span></div>'+
+    '<div class="iitem"><label>Usuario</label><span>'+r.usuario+'</span></div>'+
+    '<div class="iitem"><label>Paquete</label><span>'+r.paquete+'</span></div>'+
+    '<div class="iitem"><label>Meses</label><span>'+r.txtMeses+'</span></div>'+
+    '<div class="iitem"><label>Total</label><span>CRC '+r.totalPagado.toLocaleString("es-CR")+'</span></div>'+
+    '<div class="iitem"><label>Vence</label><span>'+r.fechaVence+'</span></div>'+
+    '</div>'+pb+
+    '<div style="color:#8b949e;font-size:10px;text-transform:uppercase;margin-bottom:7px;">Mensaje para WhatsApp:</div>'+
+    '<div class="msgbox" id="msgbox">'+r.mensaje+'</div>'+
+    '<button class="btn-copy" id="btnc" onclick="copiar()">Copiar mensaje</button>'+
+    '<button class="btn-back" onclick="reset()">Procesar otro cliente</button>'+
+    '</div>';
+  el.className="result show";
+}
+
+function copiar(){
+  var t=document.getElementById("msgbox").innerText;
+  navigator.clipboard.writeText(t).then(function(){
+    var b=document.getElementById("btnc");
+    b.textContent="Copiado!";b.className="btn-copy ok";
+    setTimeout(function(){b.textContent="Copiar mensaje";b.className="btn-copy";},2500);
+  });
+}
+
+function reset(){
+  document.getElementById("form").style.display="block";
+  document.getElementById("result").className="result";
+  document.getElementById("nombre").value="";
+  document.getElementById("telefono").value="";
+  document.getElementById("usuario").value="";
+  if(document.getElementById("telefono2"))document.getElementById("telefono2").value="";
+}
+
+calcPrecio();
+</script>
+</body>
+</html>

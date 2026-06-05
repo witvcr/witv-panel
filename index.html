@@ -1,289 +1,405 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>WiTV Panel</title>
+<base target="_top">
+<meta charset="utf-8">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#0d1117;padding:16px}
-.card{background:#161b22;border-radius:12px;padding:20px;width:100%;max-width:420px;border:1px solid #30363d;margin:0 auto}
-.logo{text-align:center;margin-bottom:18px}
-.logo h1{color:#e53935;font-size:26px;font-weight:900;letter-spacing:2px}
-.logo p{color:#8b949e;font-size:12px;margin-top:4px}
-.tabs{display:flex;background:#0d1117;border-radius:8px;padding:3px;margin-bottom:18px;gap:3px}
-.tab{flex:1;padding:10px;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:#555}
-.tab.active{background:#e53935;color:#fff}
-.fg{margin-bottom:14px}
-.fg label{display:block;color:#8b949e;font-size:11px;font-weight:600;margin-bottom:5px;text-transform:uppercase}
-.fg input,.fg select{width:100%;padding:12px 13px;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;font-size:14px;outline:none}
-.fg input:focus,.fg select:focus{border-color:#e53935}
-select option{background:#161b22}
-.row{display:flex;gap:10px}
-.row .fg{flex:1}
-.tel-row{display:flex;gap:8px}
-.tel-code{width:80px;flex-shrink:0}
-.tel-num{flex:1}
-.pricebox{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:14px;text-align:center}
-.plabel{color:#8b949e;font-size:10px;text-transform:uppercase;margin-bottom:4px}
-.amount{color:#3fb950;font-size:24px;font-weight:900}
-.promo-txt{color:#e53935;font-size:11px;margin-top:3px;display:none}
-.btn-main{width:100%;padding:13px;background:#e53935;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
-.sep{border:none;border-top:1px solid #30363d;margin:16px 0}
-.sec-lbl{color:#8b949e;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:10px}
-.btn-upd{width:100%;padding:11px;background:#1f6feb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer}
-.result{display:none;margin-top:16px}
-.result.show{display:block}
-.rcard{background:#0d2d1a;border:1px solid #238636;border-radius:10px;padding:14px}
-.rcard.err{background:#2d0d0d;border-color:#da3633}
-.rtitle{color:#3fb950;font-weight:700;font-size:13px;margin-bottom:10px}
-.etitle{color:#f85149}
-.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.iitem label{color:#484f58;font-size:10px;text-transform:uppercase;margin-bottom:2px;display:block}
-.iitem span{color:#e6edf3;font-size:13px;font-weight:600}
-.promo-badge{background:#0d2d1a;border:1px solid #238636;border-radius:6px;padding:7px 10px;color:#3fb950;font-size:12px;margin-bottom:10px;text-align:center}
-.msgbox{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;color:#c9d1d9;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;margin-bottom:10px}
-.btn-copy{width:100%;padding:11px;background:#1f6feb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer}
-.btn-copy.ok{background:#238636}
-.btn-back{width:100%;padding:9px;background:transparent;color:#8b949e;border:1px solid #30363d;border-radius:8px;font-size:13px;cursor:pointer;margin-top:7px}
-.loader{display:none;text-align:center;padding:20px;color:#8b949e}
-.spin{width:28px;height:28px;border:3px solid #30363d;border-top-color:#e53935;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 8px}
-@keyframes sp{to{transform:rotate(360deg)}}
+  :root{--bg:#0e1320;--card:#161d2e;--card2:#1c2435;--red:#e23744;--green:#22c55e;
+        --blue:#2563eb;--txt:#e8edf5;--muted:#8a94a6;--border:#28303f;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,Roboto,Segoe UI,sans-serif;}
+  body{background:var(--bg);color:var(--txt);padding:14px;}
+  .wrap{max-width:560px;margin:0 auto;background:var(--card);border:1px solid var(--border);
+        border-radius:18px;padding:20px;}
+  h1{text-align:center;font-size:26px;font-weight:800;}
+  h1 .wi{color:var(--red);} h1 .tv{color:#fff;}
+  .sub{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 18px;}
+  .tabs{display:flex;gap:8px;margin-bottom:18px;}
+  .tab{flex:1;padding:13px;text-align:center;border-radius:10px;background:var(--card2);
+       color:var(--muted);font-weight:600;cursor:pointer;border:none;font-size:15px;}
+  .tab.active{background:var(--red);color:#fff;}
+  label{display:block;font-size:11px;font-weight:700;color:var(--muted);
+        text-transform:uppercase;letter-spacing:.5px;margin:14px 0 6px;}
+  input,select{width:100%;padding:13px;background:var(--card2);border:1px solid var(--border);
+        border-radius:10px;color:var(--txt);font-size:15px;}
+  .search-row{display:flex;gap:8px;} .search-row input{flex:1;}
+  .btn{width:100%;padding:15px;border:none;border-radius:11px;font-size:16px;font-weight:700;
+       color:#fff;cursor:pointer;margin-top:16px;}
+  .btn-red{background:var(--red);} .btn-blue{background:var(--blue);} .btn-green{background:var(--green);}
+  .btn-search{width:auto;padding:13px 18px;margin-top:0;background:var(--red);}
+  .row{display:flex;gap:12px;} .row>div{flex:1;}
+  .timewrap{display:flex;gap:8px;align-items:center;}
+  .timewrap select{flex:1;}
+  input[type=time]{color-scheme:dark;font-size:18px;}
+  .card{background:var(--card2);border-radius:12px;padding:14px;margin-top:12px;cursor:pointer;
+        border-left:5px solid var(--green);position:relative;}
+  .card.off{border-left-color:var(--red);}
+  .card .dot{width:11px;height:11px;border-radius:50%;background:var(--green);
+        display:inline-block;margin-right:7px;}
+  .card.off .dot{background:var(--red);}
+  .card .pkg{font-weight:700;font-size:16px;}
+  .card .badge{position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;
+        padding:3px 9px;border-radius:20px;background:rgba(34,197,94,.15);color:var(--green);}
+  .card.off .badge{background:rgba(226,55,68,.15);color:var(--red);}
+  .card .meta{color:var(--muted);font-size:13px;margin-top:5px;line-height:1.5;}
+  .total{background:var(--card2);border-radius:12px;padding:18px;text-align:center;margin-top:16px;}
+  .total .lbl{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;}
+  .total .amt{color:var(--green);font-size:30px;font-weight:800;margin-top:4px;}
+  .hidden{display:none;}
+  .spin{text-align:center;color:var(--muted);padding:16px;font-size:14px;}
+  .divider{height:1px;background:var(--border);margin:22px 0 6px;}
+  .back{color:var(--muted);font-size:13px;cursor:pointer;margin-bottom:6px;display:inline-block;}
+  .resbox{margin-top:16px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;}
+  .resbox .ok{color:var(--green);font-weight:700;font-size:14px;margin-bottom:10px;}
+  .msgtxt{white-space:pre-line;font-size:14px;line-height:1.55;background:#0e1320;
+          border:1px solid var(--border);border-radius:10px;padding:12px;max-height:240px;overflow:auto;}
+  .errbox{margin-top:14px;padding:14px;border-radius:10px;white-space:pre-line;font-size:14px;
+          background:rgba(226,55,68,.12);border:1px solid var(--red);}
 </style>
 </head>
 <body>
-<div class="card">
-  <div class="logo">
-    <h1>Wi<span style="color:#e6edf3">TV</span></h1>
-    <p>Panel de gestion de clientes</p>
-  </div>
+<!-- ===== PANTALLA DE PIN ===== -->
+<div id="pinScreen" class="wrap" style="text-align:center;">
+  <h1><span class="wi">Wi</span><span class="tv">TV</span></h1>
+  <div class="sub">Panel de gestion de clientes</div>
+  <label style="text-align:left;">Ingresá tu PIN</label>
+  <input id="pinInput" type="password" inputmode="numeric" placeholder="••••"
+         onkeydown="if(event.key==='Enter')entrarPin()" style="text-align:center;letter-spacing:6px;font-size:22px;">
+  <button class="btn btn-red" onclick="entrarPin()">Entrar</button>
+  <div id="pinError" style="color:var(--red);font-size:13px;margin-top:10px;"></div>
+</div>
+
+<!-- ===== APP (oculta hasta validar PIN) ===== -->
+<div id="appScreen" class="hidden">
+<div class="wrap">
+  <h1><span class="wi">Wi</span><span class="tv">TV</span></h1>
+  <div class="sub">Panel de gestion de clientes</div>
 
   <div class="tabs">
-    <button class="tab active" id="tab-act" onclick="setTab('ACTIVAR')">Activar cliente</button>
-    <button class="tab" id="tab-ren" onclick="setTab('RENOVAR')">Renovar</button>
+    <button class="tab" id="tabAct" onclick="verTab('act')">Activar cliente</button>
+    <button class="tab active" id="tabRen" onclick="verTab('ren')">Renovar</button>
   </div>
 
-  <div id="form">
-    <input type="hidden" id="accion" value="ACTIVAR">
-
-    <div id="bloque-activar">
-      <div class="fg">
-        <label>Nombre del cliente</label>
-        <input type="text" id="nombre" placeholder="Juan Perez">
+  <!-- ===== ACTIVAR ===== -->
+  <div id="seccionAct" class="hidden">
+    <div id="a_form">
+      <label>Nombre del cliente</label>
+      <input id="a_nombre" placeholder="Juan Perez">
+      <label>Telefono del cliente</label>
+      <div class="row">
+        <div style="flex:0 0 80px;"><input id="a_cod" value="506"></div>
+        <div><input id="a_tel" placeholder="12345678"></div>
       </div>
-      <div class="fg">
-        <label>Telefono del cliente</label>
-        <div class="tel-row">
-          <div class="tel-code"><input type="text" id="codpais" value="506"></div>
-          <div class="tel-num"><input type="tel" id="telefono" placeholder="12345678"></div>
-        </div>
+      <label>Usuario / nombre de cuenta</label>
+      <input id="a_usuario" placeholder="Ej: user123">
+      <div class="row">
+        <div><label>Paquete</label><select id="a_paquete" onchange="actDispYPlanes()"></select></div>
+        <div><label>Dispositivos</label><select id="a_disp" onchange="actPlanes()"></select></div>
       </div>
+      <label>Plan / promocion</label>
+      <select id="a_meses" onchange="actTotal()"></select>
+      <label>Hora de activacion</label>
+      <input type="time" id="a_hora" step="60">
+      <div class="total"><div class="lbl">Total a cobrar</div><div class="amt" id="a_total">CRC —</div></div>
+      <button class="btn btn-red" onclick="activar()">Procesar activacion</button>
     </div>
-
-    <div class="fg">
-      <label>Usuario / Nombre de cuenta</label>
-      <input type="text" id="usuario" placeholder="Ej: user123">
-    </div>
-
-    <div class="row">
-      <div class="fg">
-        <label>Paquete</label>
-        <select id="paquete" onchange="calcPrecio()">
-          <option value="BASICO">Basico</option>
-          <option value="PREMIUM">Premium</option>
-          <option value="FLUJOTV">FlujotTV</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Dispositivos</label>
-        <select id="dispositivos" onchange="calcPrecio()">
-          <option value="3">3 disp.</option>
-          <option value="5">5 disp.</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="fg">
-        <label>Meses</label>
-        <select id="meses" onchange="calcPrecio()">
-          <option value="1">1 mes</option>
-          <option value="2">2 meses</option>
-          <option value="3">3 meses</option>
-          <option value="6">6 meses - PROMO</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Hora activacion</label>
-        <input type="time" id="hora" value="12:00">
-      </div>
-    </div>
-
-    <div class="pricebox">
-      <div class="plabel">Total a cobrar</div>
-      <div class="amount" id="precio">CRC 5,500</div>
-      <div class="promo-txt" id="promo"></div>
-    </div>
-
-    <button class="btn-main" onclick="enviar()">Procesar</button>
-
-    <div id="bloque-renovar" style="display:none">
-      <hr class="sep">
-      <div class="sec-lbl">Cambio de numero de telefono (opcional)</div>
-      <div class="fg">
-        <label>Nuevo numero del cliente</label>
-        <div class="tel-row">
-          <div class="tel-code"><input type="text" id="codpais2" value="506"></div>
-          <div class="tel-num"><input type="tel" id="telefono2" placeholder="12345678"></div>
-        </div>
-      </div>
-      <button class="btn-upd" onclick="actualizarTel()">Actualizar numero de telefono</button>
-    </div>
+    <div id="a_resultado"></div>
   </div>
 
-  <div class="loader" id="loader"><div class="spin"></div>Procesando...</div>
-  <div class="result" id="result"></div>
+  <!-- ===== RENOVAR ===== -->
+  <div id="seccionRen">
+    <div id="paso1">
+      <label>Buscar cliente (usuario, nombre o telefono)</label>
+      <div class="search-row">
+        <input id="q" placeholder="Ej: JosePMZ55" onkeydown="if(event.key==='Enter')buscar()">
+        <button class="btn btn-search" onclick="buscar()">🔍</button>
+      </div>
+      <div id="resultados"></div>
+    </div>
+    <div id="paso2" class="hidden">
+      <span class="back" onclick="volver()">‹ Volver a la busqueda</span>
+      <div id="cardSel"></div>
+      <label>Usuario / nombre de cuenta</label>
+      <input id="r_usuario" readonly>
+      <div class="row">
+        <div><label>Paquete</label><select id="r_paquete" onchange="renDispYPlanes()"></select></div>
+        <div><label>Dispositivos</label><select id="r_disp" onchange="renPlanes()"></select></div>
+      </div>
+      <label>Plan / promocion</label>
+      <select id="r_meses" onchange="renTotal()"></select>
+      <div id="r_horabox" class="hidden">
+        <label>Hora (cuenta vencida — ajustala si querés)</label>
+        <input type="time" id="r_hora" step="60">
+      </div>
+      <div class="total"><div class="lbl">Total a cobrar</div><div class="amt" id="r_total">CRC —</div></div>
+      <button class="btn btn-red" onclick="renovar()">Procesar renovacion</button>
+      <div class="divider"></div>
+      <label>Cambio de numero de telefono (opcional)</label>
+      <div class="row">
+        <div style="flex:0 0 80px;"><input id="r_cod" value="506"></div>
+        <div><input id="r_tel" placeholder="Nuevo numero (sin codigo)"></div>
+      </div>
+      <div id="r_resultado"></div>
+    </div>
+  </div>
+</div>
 </div>
 
 <script>
-// *** IMPORTANTE: Reemplaza esta URL con la URL de tu Apps Script ***
-var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznM66cGoIDJacq9cELOwmdhCkTjapAa6owF0zptvNK88_7DHw1x3KdU0S5Y8rzWESFcA/exec";
+  let CATALOGO=[]; let sel=null;
+  const EXEC_URL = "https://script.google.com/macros/s/AKfycbyp4-LKsBoeVNRSFZcYeB9eLQntgpp-TvQSC9OROAmzA90nCMlERWzdnclu6E7E7tbQww/exec";
+  const PIN_DIAS = 15;
 
-var P={BASICO:{3:5500,5:7500},PREMIUM:{3:7000,5:7000},FLUJOTV:{3:5000,5:5000}};
-var PROMO={6:2};
-
-function setTab(a){
-  document.getElementById("accion").value=a;
-  document.getElementById("tab-act").className="tab"+(a=="ACTIVAR"?" active":"");
-  document.getElementById("tab-ren").className="tab"+(a=="RENOVAR"?" active":"");
-  document.getElementById("bloque-activar").style.display=a=="ACTIVAR"?"block":"none";
-  document.getElementById("bloque-renovar").style.display=a=="RENOVAR"?"block":"none";
-  calcPrecio();
-}
-
-function calcPrecio(){
-  var pkg=document.getElementById("paquete").value;
-  var d=parseInt(document.getElementById("dispositivos").value);
-  var m=parseInt(document.getElementById("meses").value);
-  var base=(P[pkg]&&P[pkg][d])?P[pkg][d]:0;
-  var ex=PROMO[m]||0;
-  document.getElementById("precio").textContent="CRC "+(base*m).toLocaleString("es-CR");
-  var pe=document.getElementById("promo");
-  if(ex>0){pe.style.display="block";pe.textContent="PROMO: recibe "+(m+ex)+" meses ("+ex+" gratis)";}
-  else{pe.style.display="none";}
-  var o5=document.getElementById("dispositivos").querySelector("option[value='5']");
-  o5.disabled=pkg=="FLUJOTV"||pkg=="PREMIUM";
-}
-
-function enviar(){
-  var accion=document.getElementById("accion").value;
-  var usuario=document.getElementById("usuario").value.trim();
-  var paquete=document.getElementById("paquete").value;
-  var dispositivos=document.getElementById("dispositivos").value;
-  var meses=document.getElementById("meses").value;
-  var hora=document.getElementById("hora").value;
-  var nombre="";
-  var telefono="";
-
-  if(accion=="ACTIVAR"){
-    nombre=document.getElementById("nombre").value.trim();
-    var cod=document.getElementById("codpais").value.trim()||"506";
-    var num=document.getElementById("telefono").value.trim();
-    if(!nombre){alert("Ingresa el nombre del cliente.");return;}
-    if(!num){alert("Ingresa el numero de telefono.");return;}
-    telefono=cod+num;
+  // ---- PIN ----
+  function pinGuardado(){
+    try{
+      const raw = localStorage.getItem('witv_pin');
+      if(!raw) return null;
+      const o = JSON.parse(raw);
+      if(Date.now() > o.exp){ localStorage.removeItem('witv_pin'); return null; }
+      return o.pin;
+    }catch(e){ return null; }
   }
-  if(!usuario){alert("Ingresa el usuario.");return;}
-
-  showLoader();
-  fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({accion:accion,nombre:nombre,telefono:telefono,usuario:usuario,paquete:paquete,dispositivos:dispositivos,meses:meses,hora:hora})
-  })
-  .then(function(r){return r.json();})
-  .then(function(r){showResult(r);})
-  .catch(function(e){showResult({ok:false,error:"Error de conexion: "+e.message});});
-}
-
-function actualizarTel(){
-  var usuario=document.getElementById("usuario").value.trim();
-  var cod=document.getElementById("codpais2").value.trim()||"506";
-  var num=document.getElementById("telefono2").value.trim();
-  if(!usuario){alert("Ingresa el usuario primero.");return;}
-  if(!num){alert("Ingresa el nuevo numero de telefono.");return;}
-  showLoader();
-  fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({accion:"ACTUALIZAR_TEL",nombre:"",telefono:cod+num,usuario:usuario,paquete:"BASICO",dispositivos:"3",meses:"1",hora:"12:00"})
-  })
-  .then(function(r){return r.json();})
-  .then(function(r){showResult(r);})
-  .catch(function(e){showResult({ok:false,error:"Error de conexion: "+e.message});});
-}
-
-function showLoader(){
-  document.getElementById("form").style.display="none";
-  document.getElementById("loader").style.display="block";
-  document.getElementById("result").className="result";
-}
-
-function showResult(r){
-  document.getElementById("loader").style.display="none";
-  var el=document.getElementById("result");
-
-  if(r.accion=="ACTUALIZAR_TEL"){
-    el.innerHTML=r.ok
-      ?'<div class="rcard"><div class="rtitle">Telefono actualizado</div><p style="color:#e6edf3;font-size:13px;">Usuario: <b>'+r.usuario+'</b><br>Nuevo telefono: <b>'+r.telefono+'</b></p><button class="btn-back" onclick="reset()">Volver</button></div>'
-      :'<div class="rcard err"><div class="rtitle etitle">Error</div><p style="color:#f85149;font-size:13px;">'+r.error+'</p><button class="btn-back" onclick="reset()">Volver</button></div>';
-    el.className="result show";return;
+  function guardarPin(pin){
+    const exp = Date.now() + PIN_DIAS*24*3600*1000;
+    try{ localStorage.setItem('witv_pin', JSON.stringify({pin:pin, exp:exp})); }catch(e){}
+  }
+  function entrarPin(){
+    const pin = document.getElementById('pinInput').value.trim();
+    document.getElementById('pinError').textContent='Verificando…';
+    api('verificarPin', {pin:pin}).then(function(r){
+      if(r && r.ok){
+        guardarPin(pin);
+        mostrarApp();
+      }else{
+        document.getElementById('pinError').textContent='PIN incorrecto.';
+      }
+    }).catch(function(){ document.getElementById('pinError').textContent='Error de conexion.'; });
+  }
+  function mostrarApp(){
+    document.getElementById('pinScreen').classList.add('hidden');
+    document.getElementById('appScreen').classList.remove('hidden');
+    iniciarApp();
   }
 
-  if(!r.ok){
-    el.innerHTML='<div class="rcard err"><div class="rtitle etitle">Error</div><p style="color:#f85149;font-size:13px;">'+r.error+'</p><button class="btn-back" onclick="reset()">Volver</button></div>';
-    el.className="result show";return;
+  // ---- API: habla con Apps Script por fetch ----
+  function api(action, datos){
+    const payload = Object.assign({action:action, pin: pinGuardado()||document.getElementById('pinInput').value.trim()||''}, datos||{});
+    return fetch(EXEC_URL, {
+      method:'POST',
+      // text/plain evita el "preflight" CORS que bloquea a Apps Script
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    }).then(function(res){ return res.json(); });
   }
 
-  var pb=r.mesesExtra>0?'<div class="promo-badge">PROMO: pago '+r.meses+' meses, recibe '+r.mesesTotal+' ('+r.mesesExtra+' gratis)</div>':"";
-  el.innerHTML='<div class="rcard">'+
-    '<div class="rtitle">'+(r.accion=="ACTIVAR"?"Cliente activado":"Renovacion registrada")+'</div>'+
-    '<div class="igrid">'+
-    '<div class="iitem"><label>Cliente</label><span>'+(r.nombre||"-")+'</span></div>'+
-    '<div class="iitem"><label>Telefono</label><span>'+r.telefono+'</span></div>'+
-    '<div class="iitem"><label>Usuario</label><span>'+r.usuario+'</span></div>'+
-    '<div class="iitem"><label>Paquete</label><span>'+r.paquete+'</span></div>'+
-    '<div class="iitem"><label>Meses</label><span>'+r.txtMeses+'</span></div>'+
-    '<div class="iitem"><label>Total</label><span>CRC '+r.totalPagado.toLocaleString("es-CR")+'</span></div>'+
-    '<div class="iitem"><label>Vence</label><span>'+r.fechaVence+'</span></div>'+
-    '</div>'+pb+
-    '<div style="color:#8b949e;font-size:10px;text-transform:uppercase;margin-bottom:7px;">Mensaje para WhatsApp:</div>'+
-    '<div class="msgbox" id="msgbox">'+r.mensaje+'</div>'+
-    '<button class="btn-copy" id="btnc" onclick="copiar()">Copiar mensaje</button>'+
-    '<button class="btn-back" onclick="reset()">Procesar otro cliente</button>'+
-    '</div>';
-  el.className="result show";
-}
 
-function copiar(){
-  var t=document.getElementById("msgbox").innerText;
-  navigator.clipboard.writeText(t).then(function(){
-    var b=document.getElementById("btnc");
-    b.textContent="Copiado!";b.className="btn-copy ok";
-    setTimeout(function(){b.textContent="Copiar mensaje";b.className="btn-copy";},2500);
-  });
-}
+  window.onload=function(){
+    if(pinGuardado()){ mostrarApp(); }
+    else { document.getElementById('pinInput').focus(); }
+  };
+  // iniciarApp se llama al validar el PIN
+  function iniciarApp(){
+    ponerHoraActualInput('a_hora');
+    api('catalogo',{}).then(function(r){
+      CATALOGO=(r&&r.data)?r.data:[];
+      resetActivar();
+    });
+  }
 
-function reset(){
-  document.getElementById("form").style.display="block";
-  document.getElementById("result").className="result";
-  document.getElementById("nombre").value="";
-  document.getElementById("telefono").value="";
-  document.getElementById("usuario").value="";
-  if(document.getElementById("telefono2"))document.getElementById("telefono2").value="";
-}
+  function verTab(t){
+    document.getElementById('tabAct').classList.toggle('active',t==='act');
+    document.getElementById('tabRen').classList.toggle('active',t==='ren');
+    document.getElementById('seccionAct').classList.toggle('hidden',t!=='act');
+    document.getElementById('seccionRen').classList.toggle('hidden',t!=='ren');
+  }
 
-calcPrecio();
+  // ----- hora con input nativo (reloj del celular) -----
+  // Pone la hora actual en un input type=time (formato 24h "HH:MM")
+  function ponerHoraActualInput(id){
+    const d=new Date();
+    const hh=(d.getHours()<10?'0':'')+d.getHours();
+    const mm=(d.getMinutes()<10?'0':'')+d.getMinutes();
+    document.getElementById(id).value=hh+':'+mm;
+  }
+  // Lee el input time (24h) y lo convierte a "2:35 a.m." (12h texto)
+  function leerHoraInput(id){
+    const v=document.getElementById(id).value; // "14:35"
+    if(!v) return '12:00 p.m.';
+    const partes=v.split(':');
+    let h=parseInt(partes[0]); const m=partes[1];
+    const ap = h>=12 ? 'p.m.' : 'a.m.';
+    let h12 = h%12; if(h12===0) h12=12;
+    return h12+':'+m+' '+ap;
+  }
+
+  function llenarPaquetes(id){
+    const s=document.getElementById(id); s.innerHTML='';
+    CATALOGO.forEach(c=>{const o=document.createElement('option');o.value=c.paquete;o.textContent=c.paquete;s.appendChild(o);});
+  }
+  function dispsDe(p){const c=CATALOGO.find(x=>x.paquete===p);return c?c.dispositivos:['3'];}
+  function llenarDisp(idSel,p){
+    const s=document.getElementById(idSel); s.innerHTML='';
+    dispsDe(p).forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=(d==='-'?'N/A':d+' disp.');s.appendChild(o);});
+  }
+  function llenarPlanes(idSel,p,d,cb){
+    const s=document.getElementById(idSel); s.innerHTML='<option>Cargando…</option>';
+    api('planes',{paquete:p,disp:d}).then(function(r){
+      const planes=(r&&r.data)?r.data:[];
+      s.innerHTML='';
+      if(!planes||planes.length===0){s.innerHTML='<option value="">Sin planes</option>';if(cb)cb();return;}
+      planes.forEach(p2=>{const o=document.createElement('option');o.value=p2.meses;o.dataset.precio=p2.precio;o.textContent=p2.etiqueta;s.appendChild(o);});
+      if(cb)cb();
+    });
+  }
+
+  // ----- ACTIVAR -----
+  function resetActivar(){
+    document.getElementById('a_nombre').value='';
+    document.getElementById('a_tel').value='';
+    document.getElementById('a_usuario').value='';
+    document.getElementById('a_cod').value='506';
+    llenarPaquetes('a_paquete');
+    // default BASICO
+    if([...document.getElementById('a_paquete').options].some(o=>o.value==='BASICO'))
+      document.getElementById('a_paquete').value='BASICO';
+    actDispYPlanesDefault();
+    ponerHoraActualInput('a_hora');
+    document.getElementById('a_resultado').innerHTML='';
+    document.getElementById('a_form').classList.remove('hidden');
+  }
+  function actDispYPlanesDefault(){
+    const p=document.getElementById('a_paquete').value;
+    llenarDisp('a_disp',p);
+    if([...document.getElementById('a_disp').options].some(o=>o.value==='3'))
+      document.getElementById('a_disp').value='3';
+    llenarPlanes('a_meses',p,document.getElementById('a_disp').value,actTotal);
+  }
+  function actDispYPlanes(){
+    const p=document.getElementById('a_paquete').value;
+    llenarDisp('a_disp',p); actPlanes();
+  }
+  function actPlanes(){
+    llenarPlanes('a_meses',document.getElementById('a_paquete').value,document.getElementById('a_disp').value,actTotal);
+  }
+  function actTotal(){
+    const s=document.getElementById('a_meses'); const op=s.options[s.selectedIndex];
+    const precio=op?parseInt(op.dataset.precio||0):0;
+    document.getElementById('a_total').textContent='CRC '+precio.toLocaleString('es-CR');
+  }
+  function activar(){
+    const btn=event.target; btn.disabled=true; btn.textContent='Procesando…';
+    const tel=document.getElementById('a_tel').value.trim();
+    const datos={
+      nombre:document.getElementById('a_nombre').value.trim(),
+      telefono:tel?(document.getElementById('a_cod').value.trim()+tel):'',
+      usuario:document.getElementById('a_usuario').value.trim(),
+      paquete:document.getElementById('a_paquete').value,
+      disp:document.getElementById('a_disp').value,
+      meses:document.getElementById('a_meses').value,
+      hora:leerHoraInput('a_hora')
+    };
+    api('activar', datos).then(function(r){
+      btn.disabled=false; btn.textContent='Procesar activacion';
+      if(!r.ok){document.getElementById('a_resultado').innerHTML='<div class="errbox">'+(r.msg||'Error')+'</div>';return;}
+      document.getElementById('a_form').classList.add('hidden');
+      mostrarResultado('a_resultado', r, resetActivar);
+    });
+  }
+
+  // ----- RENOVAR -----
+  function buscar(){
+    const q=document.getElementById('q').value.trim(); if(!q)return;
+    document.getElementById('resultados').innerHTML='<div class="spin">Buscando…</div>';
+    api('buscar',{termino:q}).then(function(r){ pintar((r&&r.data)?r.data:[]); });
+  }
+  function pintar(lista){
+    const c=document.getElementById('resultados');
+    if(!lista||lista.length===0){c.innerHTML='<div class="spin">No se encontraron cuentas.</div>';return;}
+    c.innerHTML=lista.map(x=>`
+      <div class="card ${x.vencido?'off':''}" onclick='abrir(${JSON.stringify(x)})'>
+        <span class="badge">${x.estado}</span>
+        <div class="pkg"><span class="dot"></span>${x.usuario||'(sin usuario)'}</div>
+        <div class="meta">${x.nombre} · ${x.paquete} · ${x.disp} disp.<br>Vence: ${x.fechaVence} a las ${x.hora}</div>
+      </div>`).join('');
+  }
+  function abrir(c){
+    sel=c;
+    document.getElementById('paso1').classList.add('hidden');
+    document.getElementById('paso2').classList.remove('hidden');
+    document.getElementById('cardSel').innerHTML=`
+      <div class="card ${c.vencido?'off':''}" style="cursor:default;">
+        <span class="badge">${c.estado}</span>
+        <div class="pkg"><span class="dot"></span>${c.usuario}</div>
+        <div class="meta">${c.nombre} · Tel: ${c.telefono}<br>Vence: ${c.fechaVence} a las ${c.hora}</div>
+      </div>`;
+    document.getElementById('r_usuario').value=c.usuario;
+    document.getElementById('r_tel').value='';
+    document.getElementById('r_resultado').innerHTML='';
+    document.querySelector('#paso2 .btn-red').classList.remove('hidden');
+    llenarPaquetes('r_paquete');
+    document.getElementById('r_paquete').value=c.paquete;
+    llenarDisp('r_disp',c.paquete);
+    document.getElementById('r_disp').value=(c.disp==='-'?'-':c.disp);
+    llenarPlanes('r_meses',c.paquete,c.disp,renTotal);
+    // si la cuenta está vencida, mostrar selector de hora manual
+    const box=document.getElementById('r_horabox');
+    if(c.vencido){ box.classList.remove('hidden'); ponerHoraActualInput('r_hora'); }
+    else { box.classList.add('hidden'); }
+  }
+  function volver(){
+    document.getElementById('paso2').classList.add('hidden');
+    document.getElementById('paso1').classList.remove('hidden');
+  }
+  function renDispYPlanes(){const p=document.getElementById('r_paquete').value;llenarDisp('r_disp',p);renPlanes();}
+  function renPlanes(){llenarPlanes('r_meses',document.getElementById('r_paquete').value,document.getElementById('r_disp').value,renTotal);}
+  function renTotal(){
+    const s=document.getElementById('r_meses');const op=s.options[s.selectedIndex];
+    const precio=op?parseInt(op.dataset.precio||0):0;
+    document.getElementById('r_total').textContent='CRC '+precio.toLocaleString('es-CR');
+  }
+  function renovar(){
+    if(!sel)return;
+    const btn=event.target; btn.disabled=true; btn.textContent='Procesando…';
+    const tel=document.getElementById('r_tel').value.trim();
+    const datos={
+      fila:sel.fila,
+      usuario:document.getElementById('r_usuario').value.trim(),
+      paquete:document.getElementById('r_paquete').value,
+      disp:document.getElementById('r_disp').value,
+      meses:document.getElementById('r_meses').value,
+      telefonoNuevo:tel?(document.getElementById('r_cod').value.trim()+tel):'',
+      horaManual: sel.vencido ? leerHoraInput('r_hora') : ''
+    };
+    api('renovar', datos).then(function(r){
+      btn.disabled=false; btn.textContent='Procesar renovacion';
+      if(!r.ok){document.getElementById('r_resultado').innerHTML='<div class="errbox">'+(r.msg||'Error')+'</div>';return;}
+      document.querySelector('#paso2 .btn-red').classList.add('hidden');
+      mostrarResultado('r_resultado', r, function(){ volver(); document.getElementById('q').value=''; document.getElementById('resultados').innerHTML=''; });
+    });
+  }
+
+  // ----- resultado con botón copiar + otro cliente -----
+  function mostrarResultado(idCont, r, fnOtro){
+    const cont=document.getElementById(idCont);
+    cont.innerHTML='';
+    const box=document.createElement('div'); box.className='resbox';
+    const ok=document.createElement('div'); ok.className='ok'; ok.textContent=r.resumen; box.appendChild(ok);
+    const txt=document.createElement('div'); txt.className='msgtxt'; txt.textContent=r.mensaje; box.appendChild(txt);
+    const bCopy=document.createElement('button'); bCopy.className='btn btn-green'; bCopy.textContent='📋 Copiar texto';
+    bCopy.onclick=function(){
+      navigator.clipboard.writeText(r.mensaje).then(function(){
+        bCopy.textContent='✅ Copiado'; setTimeout(()=>bCopy.textContent='📋 Copiar texto',1500);
+      }).catch(function(){
+        const ta=document.createElement('textarea'); ta.value=r.mensaje; document.body.appendChild(ta);
+        ta.select(); try{document.execCommand('copy');bCopy.textContent='✅ Copiado';}catch(e){}
+        document.body.removeChild(ta); setTimeout(()=>bCopy.textContent='📋 Copiar texto',1500);
+      });
+    };
+    box.appendChild(bCopy);
+    const bOtro=document.createElement('button'); bOtro.className='btn btn-blue'; bOtro.textContent='➕ Ingresar otro cliente';
+    bOtro.onclick=fnOtro; box.appendChild(bOtro);
+    cont.appendChild(box);
+  }
 </script>
 </body>
 </html>

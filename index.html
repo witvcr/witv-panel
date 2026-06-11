@@ -75,8 +75,9 @@
   <div class="sub">Panel de gestion de clientes</div>
 
   <div class="tabs">
-    <button class="tab" id="tabAct" onclick="verTab('act')">Activar cliente</button>
+    <button class="tab" id="tabAct" onclick="verTab('act')">Activar</button>
     <button class="tab active" id="tabRen" onclick="verTab('ren')">Renovar</button>
+    <button class="tab" id="tabVen" onclick="verTab('ven')">Vencimientos</button>
   </div>
 
   <!-- ===== ACTIVAR ===== -->
@@ -140,6 +141,15 @@
       </div>
       <div id="r_resultado"></div>
     </div>
+  </div>
+
+  <!-- ===== VENCIMIENTOS ===== -->
+  <div id="seccionVen" class="hidden">
+    <div style="margin-top:10px;color:var(--muted);font-size:13px;">
+      Clientes que vencen hoy, mañana y pasado mañana.
+    </div>
+    <button class="btn btn-blue" onclick="cargarVencimientos()">🔄 Actualizar lista</button>
+    <div id="venLista"></div>
   </div>
 </div>
 </div>
@@ -209,8 +219,49 @@
   function verTab(t){
     document.getElementById('tabAct').classList.toggle('active',t==='act');
     document.getElementById('tabRen').classList.toggle('active',t==='ren');
+    document.getElementById('tabVen').classList.toggle('active',t==='ven');
     document.getElementById('seccionAct').classList.toggle('hidden',t!=='act');
     document.getElementById('seccionRen').classList.toggle('hidden',t!=='ren');
+    document.getElementById('seccionVen').classList.toggle('hidden',t!=='ven');
+    if(t==='ven') cargarVencimientos();
+  }
+
+  // ----- VENCIMIENTOS -----
+  function cargarVencimientos(){
+    const cont=document.getElementById('venLista');
+    cont.innerHTML='<div class="spin">Cargando…</div>';
+    api('vencimientos',{}).then(function(r){
+      const lista=(r&&r.data)?r.data:[];
+      if(!lista.length){ cont.innerHTML='<div class="spin">No hay clientes que venzan en los próximos 3 días. 🎉</div>'; return; }
+      cont.innerHTML=lista.map(function(c,idx){
+        const cls = c.cuando===0?'off':'';
+        const num = c.telefono;
+        const txtJS = encodeURIComponent(c.mensaje);
+        return '<div class="card '+cls+'">'+
+          '<span class="badge">'+c.etiqueta+'</span>'+
+          '<div class="pkg"><span class="dot"></span>'+(c.nombre||c.usuario)+'</div>'+
+          '<div class="meta">'+c.usuario+' · '+c.paquete+'<br>Vence: '+c.fechaVence+' a las '+c.hora+' · ₡'+c.precio+'</div>'+
+          '<button class="btn btn-green" onclick="copiarVen(this,\''+txtJS+'\')">📋 Copiar recordatorio</button>'+
+          (num ? '<button class="btn btn-blue" onclick="abrirWhatsapp(\''+num+'\',\''+txtJS+'\')">💬 Abrir WhatsApp</button>' : '')+
+          '</div>';
+      }).join('');
+    }).catch(function(){ cont.innerHTML='<div class="spin">Error al cargar.</div>'; });
+  }
+  function copiarVen(btn, txtEnc){
+    const txt=decodeURIComponent(txtEnc);
+    navigator.clipboard.writeText(txt).then(function(){
+      btn.textContent='✅ Copiado'; setTimeout(()=>btn.textContent='📋 Copiar recordatorio',1500);
+    }).catch(function(){
+      const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');btn.textContent='✅ Copiado';}catch(e){}
+      document.body.removeChild(ta);setTimeout(()=>btn.textContent='📋 Copiar recordatorio',1500);
+    });
+  }
+  function abrirWhatsapp(num, txtEnc){
+    let n=num.replace(/[^0-9]/g,'');
+    if(n.length===8) n='506'+n; // si falta el codigo de pais, asumir CR
+    const url='https://wa.me/'+n+'?text='+txtEnc;
+    window.open(url,'_blank');
   }
 
   // ----- hora con input nativo (reloj del celular) -----

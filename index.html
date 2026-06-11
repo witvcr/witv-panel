@@ -83,8 +83,10 @@
   <!-- ===== ACTIVAR ===== -->
   <div id="seccionAct" class="hidden">
     <div id="a_form">
-      <label>Nombre del cliente</label>
-      <input id="a_nombre" placeholder="Juan Perez">
+      <div class="row">
+        <div><label>Nombre</label><input id="a_nombre" placeholder="Juan"></div>
+        <div><label>Apellidos</label><input id="a_apellido" placeholder="Perez Mora"></div>
+      </div>
       <label>Telefono del cliente</label>
       <div class="row">
         <div style="flex:0 0 80px;"><input id="a_cod" value="506"></div>
@@ -306,6 +308,7 @@
   // ----- ACTIVAR -----
   function resetActivar(){
     document.getElementById('a_nombre').value='';
+    document.getElementById('a_apellido').value='';
     document.getElementById('a_tel').value='';
     document.getElementById('a_usuario').value='';
     document.getElementById('a_cod').value='506';
@@ -342,6 +345,7 @@
     const tel=document.getElementById('a_tel').value.trim();
     const datos={
       nombre:document.getElementById('a_nombre').value.trim(),
+      apellido:document.getElementById('a_apellido').value.trim(),
       telefono:tel?(document.getElementById('a_cod').value.trim()+tel):'',
       usuario:document.getElementById('a_usuario').value.trim(),
       paquete:document.getElementById('a_paquete').value,
@@ -370,7 +374,7 @@
       <div class="card ${x.vencido?'off':''}" onclick='abrir(${JSON.stringify(x)})'>
         <span class="badge">${x.estado}</span>
         <div class="pkg"><span class="dot"></span>${x.usuario||'(sin usuario)'}</div>
-        <div class="meta">${x.nombre} · ${x.paquete} · ${x.disp} disp.<br>Vence: ${x.fechaVence} a las ${x.hora}</div>
+        <div class="meta">${x.nombreCompleto||x.nombre} · ${x.paquete} · ${x.disp} disp.<br>Vence: ${x.fechaVence} a las ${x.hora}</div>
       </div>`).join('');
   }
   function abrir(c){
@@ -381,7 +385,7 @@
       <div class="card ${c.vencido?'off':''}" style="cursor:default;">
         <span class="badge">${c.estado}</span>
         <div class="pkg"><span class="dot"></span>${c.usuario}</div>
-        <div class="meta">${c.nombre} · Tel: ${c.telefono}<br>Vence: ${c.fechaVence} a las ${c.hora}</div>
+        <div class="meta">${c.nombreCompleto||c.nombre} · Tel: ${c.telefono}<br>Vence: ${c.fechaVence} a las ${c.hora}</div>
       </div>`;
     document.getElementById('r_usuario').value=c.usuario;
     document.getElementById('r_tel').value='';
